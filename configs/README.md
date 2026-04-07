@@ -1,4 +1,4 @@
-# Configs (matches jnj-sam2-pipeline layout)
+# Configs (matches sam2-pipeline layout)
 
 - **`config.yaml`** – Hydra main config for `run.py` (pipeline entry point); defines `paths` and default stage.
 - **`sweep.yaml`** – WandB hyperparameter sweep; use `wandb sweep configs/sweep.yaml`.

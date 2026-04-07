@@ -1,7 +1,7 @@
 """
 Stage 1: SAM2 pseudomask generation.
 
-Full logic: load SAM2 via jnj-sam2-pipeline, tile full-size images + bboxes,
+Full logic: load SAM2 via sam2-pipeline, tile full-size images + bboxes,
 run SAM2 per tile, merge polygons to full-image LabelMe JSONs.
 """
 
@@ -27,21 +27,21 @@ def _resolve_path(p, root: Path) -> Path:
 
 
 def _pipeline_root(root: Path) -> Path:
-    pipeline_root = root / "jnj-sam2-pipeline"
+    pipeline_root = root / "sam2-pipeline"
     pipeline_root = Path(os.environ.get("SAM2_PIPELINE_ROOT", str(pipeline_root)))
     pipeline_root = pipeline_root.resolve()
     pipeline_src = pipeline_root / "src"
     if not (pipeline_src / "__init__.py").exists():
         raise FileNotFoundError(
             f"SAM2 pipeline not found at '{pipeline_src}'. "
-            "Expected a local copy at jnj-sam2-pipeline/src or set SAM2_PIPELINE_ROOT."
+            "Expected a local copy at sam2-pipeline/src or set SAM2_PIPELINE_ROOT."
         )
     return pipeline_root
 
 
 def _import_sam2_pipeline(pipeline_root: Path):
     """
-    Import the local jnj-sam2-pipeline 'src/' package under an isolated alias so:
+    Import the local sam2-pipeline 'src/' package under an isolated alias so:
     - its internal relative imports work
     - it does not collide with this repo's 'src' package
     """
@@ -121,7 +121,7 @@ def run(cfg: DictConfig) -> None:
     device = str(cfg.get("device", "cuda"))
     local_ckpt = cfg.stage.get("local_ckpt") or os.environ.get("SAM2_CKPT_PATH")
     if not local_ckpt:
-        default_ckpt = root / "jnj-sam2-pipeline" / "checkpoints" / "base_models" / "sam2_hiera_large.pt"
+        default_ckpt = root / "sam2-pipeline" / "checkpoints" / "base_models" / "sam2_hiera_large.pt"
         if default_ckpt.exists():
             local_ckpt = str(default_ckpt)
     tile_size = int(cfg.stage.get("tile_size", 1024))
@@ -134,7 +134,7 @@ def run(cfg: DictConfig) -> None:
     pipeline_root = _pipeline_root(root)
     _import_sam2_pipeline(pipeline_root)
     from sam2_pipeline.models.sam2_lora import SAM2LoRA  # type: ignore
-    from sam2_pipeline.stages.pseudomask import (  # type: ignore  # jnj-sam2-pipeline
+    from sam2_pipeline.stages.pseudomask import (  # type: ignore  # sam2-pipeline
         mask_to_polygon,
         _predict_sam2_batch,
         _bbox_to_binary_mask,

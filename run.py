@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DeepLabV3+ Pipeline - Single entry point (jnj-sam2-pipeline style).
+DeepLabV3+ Pipeline - Single entry point (sam2-pipeline style).
 
     Stages: pseudomask → refinement → prepare → finetune → infer → evaluate → compare → compare_bboxes
 

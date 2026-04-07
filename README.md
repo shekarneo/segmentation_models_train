@@ -2,7 +2,7 @@
 
 End‑to‑end **semantic segmentation** pipeline for industrial defect detection (e.g. scratch, stain) built around **segmentation_models_pytorch (SMP)** and **SAM2**.
 
-The pipeline is fully staged (prepare → pseudomask → refinement → finetune → infer → evaluate → compare → compare_bboxes), uses **Hydra** for configuration, and integrates **local SAM2 checkpoints** via a bundled `jnj-sam2-pipeline`.
+The pipeline is fully staged (prepare → pseudomask → refinement → finetune → infer → evaluate → compare → compare_bboxes), uses **Hydra** for configuration, and integrates **local SAM2 checkpoints** via a bundled `sam2-pipeline`.
 
 ---
 
@@ -16,7 +16,7 @@ The pipeline is fully staged (prepare → pseudomask → refinement → finetune
   - **Per‑class validation metrics** (IoU, Dice, Precision, Recall, F1) with logging to terminal
   - Multi‑GPU training via **DistributedDataParallel (DDP)** using `torchrun`
 - **SAM2 integration**
-  - Uses only the **local** `jnj-sam2-pipeline` and checkpoints (no external paths required)
+  - Uses only the **local** `sam2-pipeline` and checkpoints (no external paths required)
   - Pseudomask generation with tiling and bbox prompts
   - Optional mask refinement (`kmeans` / threshold) with safe fallbacks
 - **Data preparation**
@@ -154,7 +154,7 @@ python run.py stage=finetune stage.architecture=FPN stage.encoder_name=efficient
   - `defect_data/` – prepared dataset (images, masks, `label_mapping.json`)
   - `Consensus_Mask_Reviewer_Test/` – example test data for comparison (images + LabelMe JSON)
 
-- `jnj-sam2-pipeline/`  
+- `sam2-pipeline/`  
   Local SAM2 pipeline (cloned or copied into this repo). Used by `pseudomask.py` and `compare.py`.
 
 - `checkpoints/`  
@@ -184,21 +184,21 @@ pip install -r requirements.txt
 
 ### 2. Local SAM2 pipeline
 
-This project expects `jnj-sam2-pipeline` to be present **inside this repo**:
+This project expects `sam2-pipeline` to be present **inside this repo**:
 
 ```bash
-ls jnj-sam2-pipeline/src
-ls jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
+ls sam2-pipeline/src
+ls sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
 ```
 
 You can optionally override paths via environment variables:
 
 ```bash
-export SAM2_PIPELINE_ROOT=/absolute/path/to/jnj-sam2-pipeline
+export SAM2_PIPELINE_ROOT=/absolute/path/to/sam2-pipeline
 export SAM2_CKPT_PATH=/absolute/path/to/sam2_hiera_large.pt
 ```
 
-If these are not set, defaults under `jnj-sam2-pipeline/` in this repo are used.
+If these are not set, defaults under `sam2-pipeline/` in this repo are used.
 
 ---
 
@@ -225,7 +225,7 @@ Key config (`configs/stage/pseudomask.yaml`):
 
 - `input_dir`, `output_dir`
 - `model_repo` (e.g. `facebook/sam2-hiera-large`)
-- `local_ckpt` (optional; if `null`, defaults to `jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt`)
+- `local_ckpt` (optional; if `null`, defaults to `sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt`)
 - `tile_size`, `overlap`
 - `label_for_masks`, `polygon_label_from_bbox`, `keep_rectangles`
 

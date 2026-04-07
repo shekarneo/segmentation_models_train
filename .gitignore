@@ -55,7 +55,6 @@ wandb/
 checkpoints/
 weights/
 ./models/
-*.pt
 *.pth
 *.ckpt
 *.onnx
@@ -146,7 +145,8 @@ docker-compose.override.yml
 *.cache
 .cache/
 
-jnj-sam2-pipeline/
+# Ignore only checkpoint binaries inside vendored SAM2 pipeline
+sam2-pipeline/**/*.pt
 outputs/
 dataset/
 compare_deeplab_sam2_results.md

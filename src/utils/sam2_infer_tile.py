@@ -15,7 +15,7 @@ import numpy as np
 
 # Project root = parent of src (when this file is src/utils/sam2_infer_tile.py)
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CHECKPOINT_DIR = _PROJECT_ROOT / "jnj-sam2-pipeline" / "checkpoints" / "base_models"
+DEFAULT_CHECKPOINT_DIR = _PROJECT_ROOT / "sam2-pipeline" / "checkpoints" / "base_models"
 
 
 def _default_checkpoint_path() -> Path:

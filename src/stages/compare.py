@@ -51,8 +51,8 @@ from .prepare import mask_from_labelme
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 DEFAULT_DATA_DIR = PROJECT_ROOT / "dataset" / "Consensus_Mask_Reviewer_Test"
-# SAM2 checkpoints: use jnj-sam2-pipeline in repo (checkpoints/base_models/sam2_hiera_large.pt)
-SAM2_CHECKPOINT_DIR = PROJECT_ROOT / "jnj-sam2-pipeline" / "checkpoints" / "base_models"
+# SAM2 checkpoints: use sam2-pipeline in repo (checkpoints/base_models/sam2_hiera_large.pt)
+SAM2_CHECKPOINT_DIR = PROJECT_ROOT / "sam2-pipeline" / "checkpoints" / "base_models"
 DEFAULT_SAM2_CHECKPOINT = SAM2_CHECKPOINT_DIR / "sam2_hiera_large.pt"
 
 # Color coding (BGR) - same as eval_detections_boxes_vs_masks.py
@@ -71,22 +71,22 @@ def _sanitize_label_for_filename(label: str) -> str:
 
 
 def _pipeline_root(root: Path) -> Path:
-    """Locate local jnj-sam2-pipeline root (same logic as pseudomask stage)."""
-    pipeline_root = root / "jnj-sam2-pipeline"
+    """Locate local sam2-pipeline root (same logic as pseudomask stage)."""
+    pipeline_root = root / "sam2-pipeline"
     pipeline_root = Path(os.environ.get("SAM2_PIPELINE_ROOT", str(pipeline_root)))
     pipeline_root = pipeline_root.resolve()
     pipeline_src = pipeline_root / "src"
     if not (pipeline_src / "__init__.py").exists():
         raise FileNotFoundError(
             f"SAM2 pipeline not found at '{pipeline_src}'. "
-            "Expected a local copy at jnj-sam2-pipeline/src or set SAM2_PIPELINE_ROOT."
+            "Expected a local copy at sam2-pipeline/src or set SAM2_PIPELINE_ROOT."
         )
     return pipeline_root
 
 
 def _import_sam2_pipeline(pipeline_root: Path):
     """
-    Import the local jnj-sam2-pipeline 'src/' package under an isolated alias so:
+    Import the local sam2-pipeline 'src/' package under an isolated alias so:
     - its internal relative imports work
     - it does not collide with this repo's 'src' package
     (mirrors src/stages/pseudomask.py).
@@ -564,7 +564,7 @@ def run_sam2_tiled_inprocess(
 ) -> np.ndarray | None:
     """Run SAM2 in-process if sam2 package is available (bbox prompts per tile, merge to full mask)."""
     try:
-        # Use the same local jnj-sam2-pipeline + SAM2LoRA flow as pseudomask stage.
+        # Use the same local sam2-pipeline + SAM2LoRA flow as pseudomask stage.
         pipeline_root = _pipeline_root(PROJECT_ROOT)
         _import_sam2_pipeline(pipeline_root)
         from sam2_pipeline.models.sam2_lora import SAM2LoRA  # type: ignore
@@ -575,7 +575,7 @@ def run_sam2_tiled_inprocess(
         if not local_ckpt:
             default_ckpt = (
                 PROJECT_ROOT
-                / "jnj-sam2-pipeline"
+                / "sam2-pipeline"
                 / "checkpoints"
                 / "base_models"
                 / "sam2_hiera_large.pt"

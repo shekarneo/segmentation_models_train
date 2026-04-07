@@ -6,7 +6,7 @@ input_dir: ${paths.root}/dataset/set1_2_train_bboxes  # Override: stage.input_di
 output_dir: ${paths.outputs}/stage1_pseudomasks
 
 model_repo: facebook/sam2-hiera-large
-local_ckpt: null  # Use repo jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt if null
+local_ckpt: null  # Use repo sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt if null
 tile_size: 1024
 overlap: 256
 label_for_masks: sam2_pseudomask

@@ -23,9 +23,9 @@ services:
       # Use 2 GPUs: set to "0,1" (or "0,1,2,3" for 4). Single GPU: "0" or "1".
       - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-1,2}
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      # SAM2: use checkpoints from jnj-sam2-pipeline in repo (mount at /workspace)
-      - SAM2_CKPT_PATH=/workspace/jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
-      - SAM2_CHECKPOINT=/workspace/jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
+      # SAM2: use checkpoints from sam2-pipeline in repo (mount at /workspace)
+      - SAM2_CKPT_PATH=/workspace/sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
+      - SAM2_CHECKPOINT=/workspace/sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
       # Pass WandB API key from host into container (set in .env or shell)
       - WANDB_API_KEY=${WANDB_API_KEY:-}
       - WANDB_ENTITY=neo21995
