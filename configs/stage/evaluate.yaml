@@ -1,0 +1,25 @@
+# Stage 5: Validation / evaluation
+name: evaluate
+description: Run validation and report metrics
+
+dataset_root: ${paths.root}/dataset/defect_data
+checkpoints_dir: ${paths.root}/checkpoints
+checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_merge_fix_binary_mode-9cbdo5b8/best_model.pth
+
+batch_size: 2
+num_workers: 4
+image_size: 1024
+num_classes: 2
+
+clahe_enabled: true
+clahe_clip_limit: 2.0
+clahe_tile_grid: [8, 8]
+crop_object_enabled: true
+crop_object_padding: 0
+
+limit_background_samples: true
+max_background_to_foreground_ratio: 0.25
+tiled_inference: true
+tile_size: 1024
+tile_overlap: 256
+infer_confidence: 0.0

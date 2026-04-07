@@ -1,0 +1,28 @@
+# Stage: Prepare dataset (LabelMe / .npy -> images/masks per split)
+name: prepare
+description: Convert raw LabelMe / .npy to dataset/defect_data structure
+
+raw_dir: ${paths.root}/dataset/set2_test
+out_dir: ${paths.root}/dataset/defect_data
+
+splits: [train, val]
+split_by_ratio: false
+split_ratios: [0.0, 1.0]
+split_seed: 42
+
+visualize: false
+use_npy: false
+save_per_class_masks: false
+no_labelme: false
+binary_mode: true
+
+prepare_tile_enabled: true   # enable tiling during prepare (splits images/masks into tiles)
+prepare_tile_size: 512
+prepare_tile_overlap: 128
+
+clahe_enabled: true
+clahe_clip_limit: 2.0
+clahe_tile_grid: [8, 8]
+
+crop_object_enabled: true
+crop_object_padding: 0

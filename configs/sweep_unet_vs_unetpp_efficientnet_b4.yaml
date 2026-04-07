@@ -1,0 +1,22 @@
+# Two-run comparison: UNet++ (EfficientNet-B4) vs UNet (ConvNeXt-Base — strongest encoder already in this repo).
+# Hyperparameters come from configs/stage/finetune.yaml; only model_profile is swept.
+#
+# From segmentation_models_train:
+#   wandb sweep configs/sweep_unet_vs_unetpp_efficientnet_b4.yaml
+#   wandb agent <sweep_id>   # or: wandb agent --count 2 <sweep_id>
+#
+# Optional: raise batch_size in finetune.yaml on A100 80GB before sweeping.
+
+project: defect-segmentation-hpc
+program: run_finetune_wandb.py
+method: grid
+
+metric:
+  name: val_dice
+  goal: maximize
+
+parameters:
+  model_profile:
+    values:
+      - unetplusplus_efficientnet_b4
+      - unet_convnext_base

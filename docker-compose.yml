@@ -1,0 +1,48 @@
+version: "3.9"
+
+# Run as host user to avoid root-owned files on the mounted volume.
+# Set UID/GID (e.g. in .env): UID=1000 GID=1000, or run:
+#   UID=$(id -u) GID=$(id -g) docker compose run --rm segmentation_models_train
+services:
+  segmentation_models_train:
+    build:
+      context: .
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: deeplabv3_plus:latest
+    container_name: segmentation_models_train
+
+    user: "${UID:-1000}:${GID:-1000}"
+
+    volumes:
+      - .:/workspace
+
+    working_dir: /workspace
+    environment:
+      # Use 2 GPUs: set to "0,1" (or "0,1,2,3" for 4). Single GPU: "0" or "1".
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-1,2}
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      # SAM2: use checkpoints from jnj-sam2-pipeline in repo (mount at /workspace)
+      - SAM2_CKPT_PATH=/workspace/jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
+      - SAM2_CHECKPOINT=/workspace/jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt
+      # Pass WandB API key from host into container (set in .env or shell)
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+      - WANDB_ENTITY=neo21995
+      - WANDB_PROJECT=defect-segmentation-hpc   # matches your sweep path
+    
+    network_mode: "host"
+
+    shm_size: 16g
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            # Request 2 GPUs. For 1 GPU use device_ids: ["0"] and NVIDIA_VISIBLE_DEVICES=0.
+            - driver: nvidia
+              device_ids: ["1", "2"]
+              capabilities: ["gpu"]
+
+    tty: true
+    stdin_open: true

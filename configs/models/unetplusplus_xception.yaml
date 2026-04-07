@@ -1,0 +1,5 @@
+architecture: UnetPlusPlus
+encoder_name: xception
+encoder_weights: imagenet
+activation: null
+in_channels: 3

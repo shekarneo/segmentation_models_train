@@ -1,0 +1,155 @@
+# ---------------------------
+
+# Python
+
+# ---------------------------
+
+**pycache**/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+
+# ---------------------------
+
+# Virtual Environments
+
+# ---------------------------
+
+.env
+.env.*
+venv/
+env/
+ENV/
+.venv/
+conda-env/
+*.env
+
+# ---------------------------
+
+# Jupyter / Notebook
+
+# ---------------------------
+
+.ipynb_checkpoints/
+
+# ---------------------------
+
+# Logs
+
+# ---------------------------
+
+logs/
+*.log
+nohup.out
+train_log*
+wandb/
+
+# ---------------------------
+
+# Model Checkpoints / Weights
+
+# ---------------------------
+
+checkpoints/
+weights/
+./models/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+
+# ---------------------------
+
+# Tensorboard
+
+# ---------------------------
+
+runs/
+tensorboard/
+events.out.tfevents*
+
+# ---------------------------
+
+# Dataset / Large Files
+
+# ---------------------------
+
+data/
+datasets/
+dataset/
+images/
+annotations/
+dataset*
+
+# ---------------------------
+
+# Outputs / Predictions
+
+# ---------------------------
+
+outputs/
+predictions/
+results/
+visualizations/
+
+# ---------------------------
+
+# Build / Distribution
+
+# ---------------------------
+
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---------------------------
+
+# IDE
+
+# ---------------------------
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---------------------------
+
+# OS
+
+# ---------------------------
+
+.DS_Store
+Thumbs.db
+
+# ---------------------------
+
+# Docker
+
+# ---------------------------
+
+docker-compose.override.yml
+*.tar
+*.img
+
+# ---------------------------
+
+# Misc
+
+# ---------------------------
+
+*.tmp
+*.cache
+.cache/
+
+jnj-sam2-pipeline/
+outputs/
+dataset/
+compare_deeplab_sam2_results.md
+wandb/
+
+*.zip

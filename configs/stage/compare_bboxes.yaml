@@ -1,0 +1,106 @@
+# Stage 7: Bbox-level comparison (DeepLabV3+ -> bboxes vs LabelMe GT bboxes)
+name: compare_bboxes
+description: >
+  Convert DeepLabV3+ semantic masks to class-labeled rectangle bboxes
+  (optional dilation), compare them with LabelMe rectangle/polygon bboxes
+  from test JSONs, and optionally export predicted bboxes as LabelMe JSONs.
+
+# Test data (expects image files + LabelMe JSONs in the same directory)
+data_dir: ${paths.root}/dataset/set2_test_refine
+output_dir: ${paths.outputs}/stage7_compare_bboxes_set2_test_dv3_binary_refine_polygon_6test_01_04_26-18mg22f0
+
+# DeepLab checkpoint (used when we need to run inference)
+# checkpoint: ${paths.root}/checkpoints/fmhqebwv_convnext_72/last_model.pth
+# checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_merge_fix_binary_mode-9cbdo5b8/best_model.pth
+# checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_binary_mode_refine-lst87hiu/best_model.pth
+# checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_binary_mode_refine_31_03_26-grz8b0wc/best_model.pth
+checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_binary_mode_refine_6test_31_03_26-18mg22f0/best_model.pth
+# checkpoint: ${paths.root}/checkpoints/unetplusplus-efficientnet_b4_binary_mode_refine_6test_01_04_26-0s1fknaq/best_model.pth
+
+
+# Optional: if set, skip DeepLab inference and load these mask PNGs instead.
+# Masks must be named {stem}.png (same stems as LabelMe JSONs).
+deeplab_masks_dir: null
+
+# Compare settings
+compare_with_bboxes: true
+# GT annotation format for comparison:
+# - bbox: use only LabelMe rectangle shapes as GT
+# - polygon: use only LabelMe polygon shapes, convert polygons -> bboxes
+# - all: use BOTH rectangle and polygon shapes (recommended — captures all annotations)
+gt_format: polygon
+iou_threshold: 0.1
+
+# LabelMe shape labels -> integer class id in masks (required if JSON uses Scratch/Stain but
+# label_mapping.json only has "defect": 1 — otherwise all GT boxes are skipped and metrics stay 0).
+gt_label_to_class_id:
+  Scratch: 1
+  Stain: 1
+
+# Predicted mask -> bboxes settings
+min_component_area: 0
+
+# Optional: merge *LabelMe GT* boxes of the same class that overlap.
+merge_overlapping_gt_boxes: true
+merge_gt_boxes_iou_threshold: 0.0
+
+# Proximity-based GT merging: merge GT boxes whose edges are within N pixels of each other.
+# Handles clusters of small scratches that the model predicts as one blob.
+# Set -1 to disable. Typical range: 20-60 px.
+merge_gt_proximity_px: 30
+
+# Merge *predictions*: all pred boxes assigned to the same GT are unioned into one box per GT
+# (multiple small preds inside one big GT → one merged pred for scoring vs that GT).
+merge_predictions_inside_gt: true
+
+# Allow one large prediction to match multiple GTs (solves "one big pred covers many small GTs").
+# Without this, the large pred matches one GT and the rest become FN.
+allow_pred_multi_gt: true
+
+# Optional: filter predicted boxes by bbox geometry/size after (optional) merge.
+# Set to null to disable.
+min_bbox_area: null
+min_bbox_width: null
+min_bbox_height: null
+
+# Optional: per-class min bbox area filter (by LabelMe label name, e.g. Scratch/Stain).
+# Example: { Scratch: 200, Stain: null }
+min_bbox_area_per_class: {"defect": null} #{ Scratch: 50, Stain: null }
+
+# Optional dilation to extend predicted mask regions before bbox extraction.
+# If dilate_iterations <= 0, dilation is disabled.
+dilate_iterations: 1
+dilate_kernel_size: 3
+
+# Export predicted bboxes to LabelMe-compatible JSONs
+save_labelme_jsons: true
+labelme_pred_dir: ${stage.output_dir}/predicted_labelme_jsons
+
+# Optional: save bbox visualization images (TP/FP/FN)
+save_bbox_visualizations: true
+vis_dir: ${stage.output_dir}/bbox_vis
+
+# DeepLab config (used when running inference inside this stage)
+dataset_root: ${paths.root}/dataset/defect_data
+checkpoints_dir: ${paths.root}/checkpoints
+
+# image_size: 1024
+image_size: 512
+num_classes: 2
+
+clahe_enabled: true
+clahe_clip_limit: 2.0
+clahe_tile_grid: [8, 8]
+
+crop_object_enabled: true
+crop_object_padding: 0
+
+tiled_inference: true
+# tile_size: 1024
+tile_size: 512
+tile_overlap: 256
+
+infer_confidence: 0.0
+
+# Model architecture/backbone is loaded from checkpoint config.
+

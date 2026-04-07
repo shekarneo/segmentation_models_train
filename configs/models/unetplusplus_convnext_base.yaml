@@ -1,0 +1,7 @@
+architecture: UnetPlusPlus
+encoder_name: convnext_base
+encoder_weights: imagenet
+activation: null
+in_channels: 3
+# Required to allow this combo (blocked by default; upgrade SMP if you still see decoder errors).
+allow_unetplusplus_convnext: true

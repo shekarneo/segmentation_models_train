@@ -1,0 +1,43 @@
+# Stage 2: Refine SAM2 masks (tighten onto dark defects via threshold/kmeans)
+name: refinement
+description: Refine SAM2 pseudomasks using OpenCV (threshold/kmeans); config inlined below.
+
+input_dir: ${paths.outputs}/stage1_pseudomasks
+output_dir: ${paths.outputs}/stage2_refined
+
+# I/O and refinement options
+io:
+  image_extensions: [".jpg", ".jpeg", ".png", ".JPG", ".PNG"]
+  mask_label: "sam2_pseudomask"
+
+cv:
+  refine:
+    method: kmeans
+    kmeans:
+      k: 2
+      max_iter: 20
+      attempts: 3
+  intensity:
+    mode: gray
+    clahe:
+      enabled: true
+      clip_limit: 2.0
+      tile_grid_size: 8
+  threshold:
+    method: global
+    value: 150
+    invert: true
+    block_size: 31
+    C: 5
+  morph:
+    op: close
+    kernel: 3
+    iterations: 1
+
+save:
+  masks_npy: false
+  polygons_json: true
+  overwrite_json_shapes: true
+  keep_rectangles: true
+  polygon_label_from_bbox: true
+  visualizations: true

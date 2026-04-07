@@ -1,0 +1,8 @@
+architecture: DeepLabV3Plus
+encoder_name: resnet101
+encoder_weights: imagenet
+activation: null
+in_channels: 3
+encoder_output_stride: 16
+decoder_channels: 256
+decoder_atrous_rates: [12, 24, 36]

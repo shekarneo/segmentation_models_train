@@ -1,0 +1,93 @@
+# WandB sweep config. Use: wandb sweep configs/sweep.yaml then wandb agent <sweep_id>
+# Run from segmentation_models_train. Tuned for highly imbalanced defect masks.
+# Focus: improve minority-class recall (especially Stain) while preserving global Dice.
+
+project: defect-segmentation
+
+# Run training stage (sweep params applied in finetune via wandb.config). Use: wandb agent <sweep_id>
+program: run_finetune_wandb.py
+
+method: bayes
+
+# Stop after this many runs (e.g. overnight on A100). Uncomment and set as needed.
+# run_cap: 24
+
+metric:
+  name: val_dice
+  goal: maximize
+
+parameters:
+
+  # Model profiles from configs/models/*.yaml
+  model_profile:
+    values:
+      - unet_convnext_base
+      - fpn_convnext_base
+      - unet_resnet50
+      - unetplusplus_resnet50
+      - deeplabv3plus_resnet50
+      - deeplabv3plus_resnet101
+
+  lr:
+    min: 1e-4
+    max: 8e-4
+    distribution: log_uniform_values
+
+  weight_decay:
+    min: 1e-5
+    max: 1e-3
+    distribution: log_uniform_values
+
+  # Optimizer
+  optimizer_name:
+    values: [adamw, adam]
+
+  # Encoder LR scale (fraction of base LR applied to pretrained encoder)
+  encoder_lr_scale:
+    values: [0.05, 0.1, 0.2]
+
+  # Scheduler
+  scheduler_name:
+    values: [onecycle, cosine]
+
+  warmup_pct:
+    values: [0.05, 0.1, 0.15]
+
+  # Gradient clipping
+  grad_clip:
+    values: [0.5, 1.0, 2.0]
+
+  # Loss
+  focal_gamma:
+    values: [1.5, 2.0, 2.5, 3.0]
+
+  ce_loss_weight:
+    values: [0.2, 0.5]
+
+  focal_loss_weight:
+    values: [1.0, 1.5, 2.0, 2.5]
+
+  dice_loss_weight:
+    values: [1.0, 1.5, 2.0, 2.5]
+
+  # Defect-focused crop augmentation is critical for tiny foreground ratios.
+  aug_random_crop_defect_prob:
+    values: [0.4, 0.6, 0.8]
+
+  aug_random_crop_defect_size:
+    values: [384, 512, 640]
+
+  # Background control for severe fg/bg imbalance.
+  limit_background_samples:
+    values: [true]
+
+  max_background_to_foreground_ratio:
+    values: [0.2, 0.25, 0.35]
+
+  # Batch size: 2x A100 80GB @ 1024px (DataParallel). Total batch 8–32.
+  # For 8GB local GPU: use batch_size 2 only (set in configs/stage/finetune.yaml or override)
+  # batch_size:
+  #   values: [8, 12, 16]
+
+  epochs:
+    value: 300

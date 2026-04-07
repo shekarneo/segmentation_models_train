@@ -1,0 +1,37 @@
+# Stage 6: Pixel-level compare — segmentation predictions vs SAM2, LabelMe polygon GT, or PNG masks
+name: compare
+description: Pixel-level comparison (segmentation model vs SAM2, rasterized LabelMe polygons, or PNG GT)
+
+data_dir: ${paths.root}/dataset/set2_train_refine
+output_dir: ${paths.outputs}/stage6_compare_mask_set2_train_refine-18mg22f0
+checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_binary_mode_refine_6test_31_03_26-18mg22f0/best_model.pth
+
+# Reference GT: use_sam2=true → SAM2 (sam2_masks_dir). use_sam2=false → gt_source labelme (polygons in JSON) or png (gt_masks_dir).
+use_sam2: false
+# When use_sam2 is false: gt_source=png → folder of {stem}.png. gt_source=labelme (default if gt_masks_dir unset) → rasterize polygons from paired JSON.
+gt_masks_dir: null
+# labelme | png (optional; inferred from gt_masks_dir when omitted)
+gt_source: labelme
+# Optional map LabelMe label string -> class id for GT rasterization (merged with checkpoint label_mapping)
+gt_label_to_class_id:
+  Scratch: 1
+  Stain: 1
+
+sam2_masks_dir: null #${paths.root}/dataset/set2_test
+refine: null  # kmeans, threshold, null
+refine_config: ${paths.config}/stage/refinement.yaml
+save_json: ${stage.output_dir}/metrics.json
+per_class_metrics: true
+
+label_mapping_path: ${paths.root}/dataset/defect_data/label_mapping.json
+image_size: 512
+num_classes: 2
+clahe_enabled: true
+clahe_clip_limit: 2.0
+clahe_tile_grid: [8, 8]
+crop_object_enabled: true
+crop_object_padding: 0
+tiled_inference: true
+tile_size: 512
+tile_overlap: 128
+infer_confidence: 0.0

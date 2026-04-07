@@ -1,0 +1,18 @@
+# Stage 1: SAM2 pseudomask generation (full-size images + LabelMe bboxes)
+name: pseudomask
+description: Generate SAM2 pseudomasks from full-resolution images and LabelMe rectangle bboxes (tiled)
+
+input_dir: ${paths.root}/dataset/set1_2_train_bboxes  # Override: stage.input_dir=...
+output_dir: ${paths.outputs}/stage1_pseudomasks
+
+model_repo: facebook/sam2-hiera-large
+local_ckpt: null  # Use repo jnj-sam2-pipeline/checkpoints/base_models/sam2_hiera_large.pt if null
+tile_size: 1024
+overlap: 256
+label_for_masks: sam2_pseudomask
+polygon_label_from_bbox: true
+keep_rectangles: true
+
+# If true, keep all disconnected SAM2 regions inside each bbox (union mask).
+# If false, only the largest connected component per bbox is kept.
+merge_multi_mask: true

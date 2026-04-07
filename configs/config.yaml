@@ -1,0 +1,32 @@
+# DeepLabV3+ Pipeline - Main Config (run.py Hydra entry)
+# Usage: python run.py stage=pseudomask
+#        python run.py stage=refinement stage.input_dir=outputs/stage1_pseudomasks
+#        python run.py stage=finetune
+#        python run.py stage=infer stage.input_dir=dataset/defect_data/images/val
+#        python run.py stage=evaluate
+#        python run.py stage=compare
+# Sweeps: wandb sweep configs/sweep.yaml
+#         wandb sweep configs/sweep_unet_vs_unetpp_efficientnet_b4.yaml  (2-run UNet++ vs UNet)
+
+defaults:
+  - _self_
+  - stage: pseudomask  # Override: stage=refinement | prepare | finetune | infer | evaluate | compare
+
+# Global
+project_name: segmentation-models-train
+seed: 42
+device: cuda
+
+# Paths (root = directory containing run.py, i.e. deeplabv3_plus)
+paths:
+  root: ${project_root:}
+  outputs: ${paths.root}/outputs
+  checkpoints: ${paths.root}/checkpoints
+  dataset: ${paths.root}/dataset
+  config: ${paths.root}/configs
+
+hydra:
+  run:
+    dir: ${paths.outputs}/${now:%Y-%m-%d}/${now:%H-%M-%S}_${stage.name}
+  sweep:
+    dir: ${paths.outputs}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}

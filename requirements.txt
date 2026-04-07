@@ -1,0 +1,10 @@
+torch
+torchvision
+segmentation-models-pytorch
+opencv-python
+numpy
+pyyaml
+wandb
+tqdm
+hydra-core
+scipy

@@ -1,0 +1,32 @@
+# Stage 4: SMP model inference
+name: infer
+description: Run trained segmentation model (SMP) on images
+
+input_dir: ${paths.root}/dataset/set2_train
+output_dir: ${paths.outputs}/stage4_infer_set2_train_binary
+checkpoint: ${paths.root}/checkpoints/deeplabv3plus-convnext_base_merge_fix_binary_mode-9cbdo5b8/best_model.pth
+tiled: true
+
+batch_size: 1
+num_workers: 4
+image_size: 1024
+num_classes: 2 # binary mode (0: background, 1: defect)
+
+dataset_root: ${paths.root}/dataset/defect_data_train
+
+clahe_enabled: true
+clahe_clip_limit: 2.0
+clahe_tile_grid: [8, 8]
+crop_object_enabled: true
+crop_object_padding: 0
+
+tiled_inference: true
+tile_size: 1024
+tile_overlap: 256
+save_tiled_outputs: false
+tiled_output_dir: null
+save_masks: false
+save_visualizations: true
+show_overlay_labels: false
+infer_visualizations_dir: null
+infer_confidence: 0.0

@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+*.log
+*.pt
+*.pth
+__pycache__
+*.pyc
+data
+checkpoints
+outputs
